@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-outfit);
+
+  /* Green Palette - Curated */
+  --color-green-50: #ecfdf5;
+  --color-green-100: #d1fae5;
+  --color-green-200: #a7f3d0;
+  --color-green-300: #6ee7b7;
+  --color-green-400: #34d399;
+  --color-green-500: #10b981;
+  --color-green-600: #059669;
+  --color-green-700: #047857;
+  --color-green-800: #065f46;
+  --color-green-900: #064e3b;
+  --color-green-950: #022c22;
+
+  /* Rich Dark Backgrounds */
+  --color-rich-black: #020403;
+  /* Very dark green-black */
+  --color-deep-green: #011c15;
+  /* Subtly lighter */
+
+  /* Semantic Tokens */
+  --color-primary: var(--color-green-500);
+  /* Brighter for dark mode pop */
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--color-green-900);
+  --color-secondary-foreground: var(--color-green-100);
+
+  --color-accent: var(--color-green-500);
+  --color-accent-foreground: #ffffff;
+
+  --color-muted: rgba(255, 255, 255, 0.05);
+  --color-muted-foreground: #94a3b8;
+
+  --color-card: rgba(2, 44, 34, 0.4);
+  /* Glassy Green-Black */
+  --color-card-foreground: #e2e8f0;
+
+  --color-popover: #064e3b;
+  --color-popover-foreground: #ffffff;
+
+  --color-border: rgba(52, 211, 153, 0.2);
+  /* Green-400 with opacity */
+  --color-input: rgba(255, 255, 255, 0.1);
+  --color-ring: var(--color-green-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #020403;
+    /* Rich Black */
+    --foreground: #ecfdf5;
+    /* Green-50 */
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15), transparent 60%),
+    radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.1), transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Utilities */
+@utility glass {
+  background-color: rgba(2, 44, 34, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(52, 211, 153, 0.1);
+}
+
+@utility glass-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
