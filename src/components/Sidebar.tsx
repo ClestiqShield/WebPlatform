@@ -18,7 +18,7 @@ export function Sidebar() {
     const { user, loading } = useAuth();
 
     // Hide sidebar on auth pages
-    if (pathname === "/login" || pathname === "/signup") {
+    if (pathname && pathname.startsWith('/auth')) {
         return null;
     }
 
