@@ -203,12 +203,7 @@ export default function ProfilePage() {
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/5">
-                                                <div>
-                                                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">User ID</label>
-                                                    <div className="font-mono text-sm text-foreground/80 bg-black/20 px-3 py-2 rounded-lg truncate select-all">
-                                                        {user.id}
-                                                    </div>
-                                                </div>
+
                                                 <div>
                                                     <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Role</label>
                                                     <div className="text-sm text-foreground/80 px-1 py-1">

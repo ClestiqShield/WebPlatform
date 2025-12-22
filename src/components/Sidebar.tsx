@@ -39,9 +39,9 @@ export function Sidebar() {
             <div className="p-6 border-b border-border/50">
                 <div className="flex flex-col">
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-green-400 bg-clip-text text-transparent">
-                        WebPlatform
+                        Clestiq Shield
                     </h1>
-                    <span className="text-xs font-mono text-muted-foreground/60 mt-1">v2.4.0-beta</span>
+                    <span className="text-xs font-mono text-muted-foreground/60 mt-1"> v2.1.1</span>
                 </div>
             </div>
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

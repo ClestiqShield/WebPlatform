@@ -45,5 +45,38 @@ apiClient.interceptors.response.use(
     }
 );
 
+export interface Application {
+    id: string;
+    name: string;
+    api_key: string;
+    created_at: string;
+}
+
+export interface ApiKey {
+    id: string;
+    key_prefix: string;
+    name: string;
+    created_at: string;
+    last_used_at?: string;
+    is_active: boolean;
+}
+
+export interface ApiKeySecret extends ApiKey {
+    api_key: string;
+}
+
+export const appsApi = {
+    getAll: () => apiClient.get<Application[]>('/apps/'),
+    create: (name: string) => apiClient.post<Application>('/apps/', { name }),
+    delete: (id: string) => apiClient.delete(`/apps/${id}`),
+    get: (id: string) => apiClient.get<Application>(`/apps/${id}`),
+};
+
+export const apiKeysApi = {
+    list: (appId: string) => apiClient.get<ApiKey[]>(`/apps/${appId}/keys`),
+    create: (appId: string, name: string) => apiClient.post<ApiKeySecret>(`/apps/${appId}/keys`, { name }),
+    revoke: (appId: string, keyId: string) => apiClient.delete(`/apps/${appId}/keys/${keyId}`),
+};
+
 export default apiClient;
 export { API_BASE_URL };
