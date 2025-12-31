@@ -173,6 +173,16 @@ export default function AppDetailsPage() {
                                     <p className="text-xs font-mono text-muted-foreground mt-1">
                                         Prefix: <span className="text-foreground/80">{key.key_prefix}</span> • Created: {new Date(key.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </p>
+                                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                            Requests: <span className="font-mono text-foreground">{key.request_count?.toLocaleString() || 0}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${key.last_used_at ? 'bg-orange-500' : 'bg-gray-700'}`} />
+                                            Last Used: <span className="text-foreground">{key.last_used_at ? new Date(key.last_used_at).toLocaleString() : 'Never'}</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <button
                                     onClick={() => handleRevokeClick(key)}
