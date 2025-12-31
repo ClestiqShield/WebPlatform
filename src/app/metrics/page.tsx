@@ -189,11 +189,10 @@ export default function MetricsPage() {
                 </div>
             </div>
 
+            {/* Row 2: Charts & Top Apps */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-
-
-                {/* Donut Chart (1 Col) */}
+                {/* Donut Chart (Key Distribution) */}
                 <div className="glass p-6 rounded-2xl border border-white/5 flex flex-col items-center justify-center">
                     <h3 className="text-lg font-semibold mb-4 w-full flex items-center gap-2">
                         <Key className="h-5 w-5 text-primary" />
@@ -211,12 +210,8 @@ export default function MetricsPage() {
                         </div>
                     </div>
                 </div>
-            </div>
 
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                {/* Top Apps by Usage - Bar Chart */}
+                {/* Top Apps by Usage - Bar Chart (Moved here) */}
                 <div className="glass p-6 rounded-2xl border border-white/5">
                     <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
                         <BarChart3 className="h-5 w-5 text-blue-500" />
@@ -247,45 +242,46 @@ export default function MetricsPage() {
                         {topAppsByUsage.length === 0 && <p className="text-center text-muted-foreground py-8">No usage data avaliable.</p>}
                     </div>
                 </div>
+            </div>
 
-                {/* Top API Keys Table */}
-                <div className="glass p-6 rounded-2xl border border-white/5">
-                    <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                        <Server className="h-5 w-5 text-purple-500" />
-                        Top Active API Keys (Global)
-                    </h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
-                            <thead>
-                                <tr className="border-b border-white/10">
-                                    <th className="pb-3 text-muted-foreground font-medium pl-2">API Key Name / Prefix</th>
-                                    <th className="pb-3 text-muted-foreground font-medium">App</th>
-                                    <th className="pb-3 text-muted-foreground font-medium text-right pr-2">Requests</th>
+
+            {/* Row 3: Top API Keys Table (Full Width) */}
+            <div className="glass p-6 rounded-2xl border border-white/5">
+                <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+                    <Server className="h-5 w-5 text-purple-500" />
+                    Top Active API Keys (Global)
+                </h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead>
+                            <tr className="border-b border-white/10">
+                                <th className="pb-3 text-muted-foreground font-medium pl-2">API Key Name / Prefix</th>
+                                <th className="pb-3 text-muted-foreground font-medium">App</th>
+                                <th className="pb-3 text-muted-foreground font-medium text-right pr-2">Requests</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {topKeys.slice(0, 10).map((key) => (
+                                <tr key={key.id} className="group hover:bg-white/5 transition-colors">
+                                    <td className="py-3 pl-2">
+                                        <div className="font-medium text-foreground">{key.name || "Unnamed Key"}</div>
+                                        <div className="text-xs text-muted-foreground font-mono">{key.key_prefix}...</div>
+                                    </td>
+                                    <td className="py-3 text-foreground/80">{key.appName}</td>
+                                    <td className="py-3 pr-2 text-right">
+                                        <span className="inline-block bg-purple-500/10 text-purple-400 px-2 py-1 rounded font-mono text-xs border border-purple-500/20">
+                                            {(key.request_count || 0).toLocaleString()}
+                                        </span>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {topKeys.slice(0, 5).map((key) => (
-                                    <tr key={key.id} className="group hover:bg-white/5 transition-colors">
-                                        <td className="py-3 pl-2">
-                                            <div className="font-medium text-foreground">{key.name || "Unnamed Key"}</div>
-                                            <div className="text-xs text-muted-foreground font-mono">{key.key_prefix}...</div>
-                                        </td>
-                                        <td className="py-3 text-foreground/80">{key.appName}</td>
-                                        <td className="py-3 pr-2 text-right">
-                                            <span className="inline-block bg-purple-500/10 text-purple-400 px-2 py-1 rounded font-mono text-xs border border-purple-500/20">
-                                                {(key.request_count || 0).toLocaleString()}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {topKeys.length === 0 && (
-                                    <tr>
-                                        <td colSpan={3} className="py-8 text-center text-muted-foreground">No API keys found.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                            {topKeys.length === 0 && (
+                                <tr>
+                                    <td colSpan={3} className="py-8 text-center text-muted-foreground">No API keys found.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

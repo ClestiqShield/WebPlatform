@@ -115,12 +115,8 @@ export default function DashboardPage() {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="glass-button px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/5 transition-colors border border-white/10 flex items-center gap-2">
-                        <Activity className="h-4 w-4" /> System Health
-                    </button>
-                    <Link href="/apps" className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-primary/20">
-                        <Plus className="h-4 w-4" /> New App
-                    </Link>
+
+
                 </div>
             </div>
 
@@ -276,7 +272,7 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Recent Activity Section */}
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-3">
                     <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                         Recent Applications
                     </h3>
@@ -317,31 +313,6 @@ export default function DashboardPage() {
                                 </Link>
                             </div>
                         )}
-                    </div>
-                </div>
-
-                {/* Usage & Cost Side Card (Simplified) */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div>
-                        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                            Quick Summary
-                        </h3>
-                        <div className="glass p-6 rounded-xl border border-white/5 space-y-6">
-
-                            {/* Cost Estimate */}
-                            <div className="flex items-center justify-between pb-4 border-b border-white/5">
-
-                                <div className="text-right">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Requests</p>
-                                    <p className="text-lg font-bold text-primary">{totalRequests.toLocaleString()}</p>
-                                </div>
-                            </div>
-
-                            <Link href="/metrics" className="w-full flex items-center justify-center px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/5 text-sm font-medium">
-                                Go to Detailed Metrics <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-
-                        </div>
                     </div>
                 </div>
             </div>
