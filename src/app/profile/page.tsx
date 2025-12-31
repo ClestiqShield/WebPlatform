@@ -19,13 +19,14 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-    const { user, logout, loading, updateUser } = useAuth();
+    const { user, logout, loading, updateUser, fetchUser } = useAuth();
     const [activeTab, setActiveTab] = useState<"profile" | "preferences" | "account">("profile");
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         full_name: "",
     });
     const [saving, setSaving] = useState(false);
+    const [retrying, setRetrying] = useState(false);
     const router = useRouter();
 
     // Preferences state (mocked for now as backend support is unclear)
@@ -44,12 +45,30 @@ export default function ProfilePage() {
         }
     }, [user]);
 
-    if (loading) {
+    // Auto-fetch if user is missing but we are on this protected page
+    useEffect(() => {
+        if (!user && !loading && !retrying) {
+            // console.log("User missing in Profile, attempting fetch...");
+            setRetrying(true);
+            // We use the fetchUser from context which might throw if 401
+            // If it throws 401, it handles redirect.
+            // If it throws 500, we catch it here.
+            fetchUser().catch((err) => {
+                console.error("Retry fetch failed on profile:", err);
+            }).finally(() => {
+                setRetrying(false);
+            });
+        }
+    }, [user, loading, fetchUser]); // retrying in dep array to avoid infinite loop logic if needed, but handled by boolean check
+
+    if (loading || retrying) {
         return (
             <div className="flex items-center justify-center h-[calc(100vh-100px)]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="h-12 w-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    <p className="text-muted-foreground animate-pulse">Loading profile...</p>
+                    <p className="text-muted-foreground animate-pulse">
+                        {retrying ? "Retrying profile load..." : "Loading profile..."}
+                    </p>
                 </div>
             </div>
         );
@@ -59,13 +78,21 @@ export default function ProfilePage() {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] gap-4">
                 <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
-                <p className="text-muted-foreground">Please log in to view your profile.</p>
-                <button
-                    onClick={() => router.push('/auth/login')}
-                    className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                    Go to Login
-                </button>
+                <p className="text-muted-foreground">Unable to load profile information. Please log in again.</p>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
+                    >
+                        Retry
+                    </button>
+                    <button
+                        onClick={() => router.push('/auth/login')}
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                    >
+                        Go to Login
+                    </button>
+                </div>
             </div>
         );
     }

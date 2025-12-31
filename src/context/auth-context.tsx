@@ -18,6 +18,7 @@ interface AuthContextType {
     login: (token: string, user: User) => void;
     logout: () => void;
     updateUser: (data: Partial<User>) => Promise<void>;
+    fetchUser: () => Promise<User | undefined>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +27,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+
+    const fetchUser = async () => {
+        try {
+            // console.log('Fetching user profile...');
+            const { data } = await apiClient.get<User>("/users/");
+            // console.log('User profile fetched:', data);
+            setUser(data);
+            return data;
+        } catch (error: any) {
+            console.error("Auth check failed:", error);
+
+            // On 401 (Unauthenticated) or 403 (Forbidden), logout.
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                console.log("Token invalid/expired (401/403), logging out.");
+                Cookies.remove("clestiq_auth_token", { path: '/' });
+                setUser(null);
+
+                const currentPath = window.location.pathname;
+                if (!currentPath.startsWith("/auth/login") && !currentPath.startsWith("/auth/signup")) {
+                    router.push("/auth/login");
+                }
+            } else {
+                console.warn("Backend error fetching profile.");
+            }
+            throw error;
+        }
+    };
 
     useEffect(() => {
         const initAuth = async () => {
@@ -38,62 +66,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (!token) {
                 setLoading(false);
                 if (!isPublicPath) {
-                    console.log("No token in AuthContext, redirecting to login");
-                    router.push("/auth/login"); // Force redirect
+                    // console.log("No token in AuthContext, redirecting to login");
+                    router.push("/auth/login");
                 }
                 return;
             }
 
-            // 2. Validate/Fetch User
-            // First search in local storage
-            let hasCachedData = false;
-            const cachedUser = localStorage.getItem("clestiq_user");
-
-            if (cachedUser) {
-                try {
-                    const parsed = JSON.parse(cachedUser);
-                    setUser(parsed);
-                    console.log("Loaded user from local storage cache");
-                    hasCachedData = true;
-                } catch (e) {
-                    console.error("Failed to parse cached user", e);
-                }
-            }
-
-            // Only fetch from backend if we DON'T have cached data
-            // User requested to rely on local storage to avoid 500 errors
-            if (!hasCachedData) {
-                try {
-                    console.log('Fetching user profile...');
-                    // Backend endpoint is /users/ (see eagle-eye/app/api/v1/endpoints/users.py)
-                    const { data } = await apiClient.get<User>("/users/");
-                    console.log('User profile fetched:', data);
-                    setUser(data);
-                    localStorage.setItem("clestiq_user", JSON.stringify(data));
-                } catch (error: any) {
-                    console.error("Auth check failed:", error);
-
-                    // CRITICAL FIX: Only logout on 401 (Unauthenticated).
-                    if (error.response?.status === 401) {
-                        console.log("Token invalid/expired (401), logging out.");
-                        Cookies.remove("clestiq_auth_token", { path: '/' });
-                        localStorage.removeItem("clestiq_user");
-                        setUser(null);
-
-                        if (!isPublicPath) {
-                            router.push("/auth/login");
-                        }
-                    } else {
-                        console.warn("Backend error (likely 500), but no cached data available.");
-                    }
-                }
-            } else {
-                console.log("Skipping backend fetch because local data exists.");
-            }
-
-            // Always redirect to dashboard if on public path and we have a user (from cache or fetch)
-            if (token && isPublicPath) {
-                router.push("/dashboard");
+            // 2. Fetch User from Backend
+            // We do NOT store user in localStorage anymore.
+            try {
+                await fetchUser();
+            } catch (e) {
+                // Error handled in fetchUser
             }
 
             setLoading(false);
@@ -105,14 +89,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = (token: string, userData: User) => {
         // Set cookie for 7 days, strict path to root
         Cookies.set("clestiq_auth_token", token, { expires: 7, secure: window.location.protocol === 'https:', path: '/' });
-        localStorage.setItem("clestiq_user", JSON.stringify(userData));
+
+        // We set the user in state, but do NOT persist to localStorage.
         setUser(userData);
         router.push("/dashboard");
     };
 
     const logout = () => {
         Cookies.remove("clestiq_auth_token", { path: '/' });
-        localStorage.removeItem("clestiq_user");
         setUser(null);
         window.location.href = "/auth/login"; // Use full page redirect to clear state completely
     };
@@ -123,7 +107,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (user) {
                 const updatedUser = { ...user, ...data };
                 setUser(updatedUser);
-                localStorage.setItem("clestiq_user", JSON.stringify(updatedUser));
             }
 
             // Send to backend
@@ -131,18 +114,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Confirm with backend response
             setUser(response.data);
-            localStorage.setItem("clestiq_user", JSON.stringify(response.data));
         } catch (error) {
             console.error("Failed to update user profile:", error);
-            // Revert or show error? For now just log it. 
-            // Since backend might be flaky, keeping the local update might be desired behavior 
-            // if we treat local as source of truth for UI.
             throw error;
         }
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, updateUser, fetchUser }}>
             {children}
         </AuthContext.Provider>
     );

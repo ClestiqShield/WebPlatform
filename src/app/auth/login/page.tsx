@@ -10,7 +10,7 @@ import { useAuth } from "@/context/auth-context";
 
 export default function LoginPage() {
     const router = useRouter();
-    const { login } = useAuth();
+    const { login, fetchUser } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -47,8 +47,10 @@ export default function LoginPage() {
                 login(access_token, user);
             } else {
                 // Fallback for older backend versions that might not return user object in login response
+                // Manually set token then fetch user
                 setAuthToken(access_token);
-                window.location.href = '/dashboard';
+                await fetchUser();
+                router.push('/dashboard');
             }
         } catch (err: any) {
             console.error('Login error full:', err);

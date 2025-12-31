@@ -48,8 +48,10 @@ apiClient.interceptors.response.use(
 export interface Application {
     id: string;
     name: string;
-    api_key: string;
+    description?: string;
+    owner_id?: string;
     created_at: string;
+    updated_at?: string;
 }
 
 export interface ApiKey {
@@ -70,12 +72,27 @@ export const appsApi = {
     create: (name: string) => apiClient.post<Application>('/apps/', { name }),
     delete: (id: string) => apiClient.delete(`/apps/${id}`),
     get: (id: string) => apiClient.get<Application>(`/apps/${id}`),
+    update: (id: string, data: Partial<Application>) => apiClient.patch<Application>(`/apps/${id}`, data),
 };
 
 export const apiKeysApi = {
     list: (appId: string) => apiClient.get<ApiKey[]>(`/apps/${appId}/keys`),
     create: (appId: string, name: string) => apiClient.post<ApiKeySecret>(`/apps/${appId}/keys`, { name }),
     revoke: (appId: string, keyId: string) => apiClient.delete(`/apps/${appId}/keys/${keyId}`),
+};
+
+export interface User {
+    id: string;
+    email: string;
+    full_name?: string;
+    is_active: boolean;
+    created_at: string;
+}
+
+export const usersApi = {
+    get: () => apiClient.get<User>('/users/'),
+    update: (data: { full_name?: string; is_active?: boolean }) => apiClient.patch<User>('/users/', data),
+    closeAccount: () => apiClient.delete('/users/account-closure'),
 };
 
 export default apiClient;
