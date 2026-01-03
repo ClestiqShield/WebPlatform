@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { getAuthToken, clearAuthToken } from './cookies';
 
-const API_BASE_URL = 'http://api.shield.clestiq.com/api/v1';
+const API_BASE_URL = 'https://api.shield.clestiq.com/api/v1';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
